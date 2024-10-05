@@ -8,15 +8,11 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
-/**
- *
- * @author tanbt
- */
 public class Bullet {
-        private int x, y;
+    private int x, y;
     private final double velocityX;
     private final double velocityY;
-    private static final int SPEED = 10; 
+    private static final int SPEED = 10;
 
     public Bullet(int startX, int startY, int targetX, int targetY) {
         this.x = startX;
@@ -37,7 +33,7 @@ public class Bullet {
 
     public void draw(Graphics g) {
         g.setColor(Color.BLACK);
-        g.fillOval(x, y, 10, 10); 
+        g.fillOval(x, y, 10, 10);
     }
 
     public int getX() {
@@ -48,13 +44,11 @@ public class Bullet {
         return y;
     }
 
-    /**
-     *
-     * @return
-     */
+    // Thêm phương thức getBounds
     public Rectangle getBounds() {
-        return new Rectangle(x, y); 
+        return new Rectangle(x, y, 10, 10); // Kích thước đạn là 10x10
     }
 }
+
 
 

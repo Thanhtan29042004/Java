@@ -6,12 +6,14 @@ package baitaplonf;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
+
 public class Tank {
-        private int x, y;
+    private int x, y;
     private final Color color;
-    private static final int SPEED = 5;
-     private static final int WIDTH = 20; 
-    private static final int HEIGHT = 20; 
+    private static final int SPEED = 10;
+    private static final int WIDTH = 20;
+    private static final int HEIGHT = 20;
 
     public Tank(int x, int y, Color color) {
         this.x = x;
@@ -45,15 +47,19 @@ public class Tank {
 
     public void draw(Graphics g) {
         g.setColor(color);
-        g.fillRect(x, y, WIDTH, HEIGHT); 
-      
+        g.fillRect(x, y, WIDTH, HEIGHT);
     }
 
     public int getX() {
-        return x + WIDTH / 2; 
+        return x + WIDTH / 2;
     }
 
     public int getY() {
-        return y; 
+        return y;
+    }
+
+    // Thêm phương thức getBounds
+    public Rectangle getBounds() {
+        return new Rectangle(x, y, WIDTH, HEIGHT);
     }
 }

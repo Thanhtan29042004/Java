@@ -16,33 +16,59 @@ import javax.swing.Timer;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Game extends JPanel implements ActionListener, KeyListener, MouseListener {
     private final Timer timer;
     private final Tank playerTank;
     private final ArrayList<Bullet> bullets;
-    private final ArrayList<Enemy> enemyTanks; 
+    private final ArrayList<Enemy> enemyTanks;
+    private final Random random;
+    private boolean gameOver;
 
     public Game() {
         playerTank = new Tank(100, 400, Color.GREEN);
         bullets = new ArrayList<>();
         enemyTanks = new ArrayList<>();
+        random = new Random();
+        gameOver = false;
 
-        enemyTanks.add(new Enemy(500, 300, Color.RED));
-        enemyTanks.add(new Enemy(600, 350, Color.RED));
-        enemyTanks.add(new Enemy(700, 400, Color.RED));
+        // Tạo một số tank địch ban đầu
+        spawnEnemy();
+        spawnEnemy();
+        spawnEnemy();
 
         timer = new Timer(16, this);
-        timer.start(); 
+        timer.start();
 
         setFocusable(true);
         addKeyListener(this);
-        addMouseListener(this);  
+        addMouseListener(this);
     }
+
+    private void spawnEnemy() {
+        // Đảm bảo kích thước cửa sổ đã được khởi tạo
+        int screenWidth = getWidth() > 0 ? getWidth() : 800;  // Sử dụng giá trị mặc định nếu getWidth() là 0
+        int screenHeight = getHeight() > 0 ? getHeight() : 600;  // Sử dụng giá trị mặc định nếu getHeight() là 0
+
+        // Tạo vị trí ngẫu nhiên cho tank địch
+        int x = random.nextInt(screenWidth - 40) + 20;  // Giới hạn vị trí theo kích thước cửa sổ
+        int y = random.nextInt(screenHeight - 40) + 20;
+
+        enemyTanks.add(new Enemy(x, y, Color.RED));
+    }
+
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        if (gameOver) {
+            g.setColor(Color.RED);
+            g.drawString("Game Over", getWidth() / 2 - 40, getHeight() / 2);
+            return;
+        }
+
         playerTank.draw(g);
 
         for (Bullet bullet : bullets) {
@@ -56,7 +82,12 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
 
     @Override
     public void actionPerformed(ActionEvent e) {
-            for (int i = 0; i < bullets.size(); i++) {
+        if (gameOver) {
+            return;
+        }
+
+        // Cập nhật đạn
+        for (int i = 0; i < bullets.size(); i++) {
             Bullet bullet = bullets.get(i);
             bullet.update();
             if (bullet.getX() > getWidth() || bullet.getY() > getHeight()) {
@@ -65,28 +96,38 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
             }
         }
 
+        // Cập nhật tank địch
         for (int i = 0; i < enemyTanks.size(); i++) {
             Enemy enemyTank = enemyTanks.get(i);
             enemyTank.moveTowards(playerTank.getX(), playerTank.getY());
 
+            // Kiểm tra va chạm giữa đạn và địch
             for (int j = 0; j < bullets.size(); j++) {
                 Bullet bullet = bullets.get(j);
                 if (enemyTank.getBounds().intersects(bullet.getBounds())) {
-                    enemyTanks.remove(i); 
-                    bullets.remove(j); 
-                    i--; 
-                    break; 
+                    enemyTanks.remove(i);
+                    bullets.remove(j);
+                    i--;
+                    spawnEnemy(); // Sinh ra địch mới
+                    break;
                 }
             }
 
-            if (enemyTank.getX() < 0 || enemyTank.getX() > getWidth() || 
-                enemyTank.getY() < 0 || enemyTank.getY() > getHeight()) {
+            // Kiểm tra va chạm giữa địch và người chơi
+            if (enemyTank.getBounds().intersects(playerTank.getBounds())) {
+                gameOver = true; // Người chơi thua
+                return;
+            }
+
+            // Nếu tank địch ra khỏi màn hình thì loại bỏ nó
+            if (enemyTank.getX() < 0 || enemyTank.getX() > getWidth() ||
+                    enemyTank.getY() < 0 || enemyTank.getY() > getHeight()) {
                 enemyTanks.remove(i);
                 i--;
             }
         }
 
-        repaint(); 
+        repaint();
     }
 
     @Override
@@ -97,13 +138,13 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
             playerTank.moveLeft();
         }
         if (key == KeyEvent.VK_RIGHT) {
-            playerTank.moveRight(getWidth()); 
+            playerTank.moveRight(getWidth());
         }
         if (key == KeyEvent.VK_UP) {
             playerTank.moveUp();
         }
         if (key == KeyEvent.VK_DOWN) {
-            playerTank.moveDown(getHeight()); 
+            playerTank.moveDown(getHeight());
         }
     }
 
@@ -133,7 +174,7 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
     public void mouseExited(MouseEvent e) {}
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("aloalo");
+        JFrame frame = new JFrame("Game");
         Game game = new Game();
         frame.add(game);
         frame.setSize(800, 600);
