@@ -5,6 +5,7 @@
 package baitaplonf;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,11 +13,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import javax.swing.Timer;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 import java.util.ArrayList;
 import java.util.Random;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.Timer;
 
 public class Game extends JPanel implements ActionListener, KeyListener, MouseListener {
     private final Timer timer;
@@ -25,6 +26,7 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
     private final ArrayList<Enemy> enemyTanks;
     private final Random random;
     private boolean gameOver;
+    private int score = 0;
 
     public Game() {
         playerTank = new Tank(100, 400, Color.GREEN);
@@ -78,6 +80,9 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
         for (Enemy enemyTank : enemyTanks) {
             enemyTank.draw(g);
         }
+         g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.drawString("Score: " + score, 10, 20);
     }
 
     @Override
@@ -108,7 +113,8 @@ public class Game extends JPanel implements ActionListener, KeyListener, MouseLi
                     enemyTanks.remove(i);
                     bullets.remove(j);
                     i--;
-                    spawnEnemy(); // Sinh ra địch mới
+                    spawnEnemy(); 
+                    score += 10;
                     break;
                 }
             }
