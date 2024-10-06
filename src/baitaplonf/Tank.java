@@ -1,12 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package baitaplonf;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Rectangle;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 public class Tank {
     private int x, y;
@@ -14,11 +14,19 @@ public class Tank {
     private static final int SPEED = 10;
     private static final int WIDTH = 20;
     private static final int HEIGHT = 20;
+    private Image tankImage;
 
     public Tank(int x, int y, Color color) {
         this.x = x;
         this.y = y;
         this.color = color;
+
+        // Load hình ảnh của xe tăng
+        try {
+            tankImage = ImageIO.read(new File("C:\\Java\\baitaplonf/tank.JFIF")); // Đường dẫn tới file hình ảnh của xe tăng
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void moveLeft() {
@@ -46,8 +54,13 @@ public class Tank {
     }
 
     public void draw(Graphics g) {
-        g.setColor(color);
-        g.fillRect(x, y, WIDTH, HEIGHT);
+        if (tankImage != null) {
+            g.drawImage(tankImage, x, y, WIDTH, HEIGHT, null); // Vẽ hình ảnh của xe tăng
+        } else {
+            // Nếu không load được hình ảnh, vẽ hình chữ nhật như cũ
+            g.setColor(color);
+            g.fillRect(x, y, WIDTH, HEIGHT);
+        }
     }
 
     public int getX() {
@@ -58,7 +71,7 @@ public class Tank {
         return y;
     }
 
-    // Thêm phương thức getBounds
+    // Phương thức getBounds để kiểm tra va chạm
     public Rectangle getBounds() {
         return new Rectangle(x, y, WIDTH, HEIGHT);
     }
